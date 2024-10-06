@@ -13,7 +13,8 @@
     "@react-spring/web": "^9.7.4",
     "@splinetool/react-spline": "^4.0.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
