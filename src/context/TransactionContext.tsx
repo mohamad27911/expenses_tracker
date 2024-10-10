@@ -1,6 +1,7 @@
 import { createContext, useState } from 'react';
 
 interface Transaction {
+  uid:string
   date: string;
   category: string;
   amount: number;

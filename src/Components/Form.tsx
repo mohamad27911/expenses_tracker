@@ -1,6 +1,6 @@
 import { FieldValues, useForm } from "react-hook-form";
-import { TransactionContext } from "../context/TransactionContext";
-import { useContext } from "react";
+import { auth, db } from "../config/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 function Form() {
   const {
@@ -9,52 +9,59 @@ function Form() {
     formState: { errors, isSubmitting },
     reset,
   } = useForm();
-  const { addTransaction } = useContext(TransactionContext);
 
-  const onSubmit = (data: FieldValues) => {
-    const transaction = {
-      date: data.date,
-      category: data.category,
-      amount: parseFloat(data.amount),
-      description: data.description,
-    };
-    addTransaction(transaction);
-    reset();
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      const user = auth.currentUser
+
+      if (user) {
+        const transaction = {
+          amount: parseFloat(data.amount),
+          date: data.date,
+          category: data.category,
+          description: data.description,
+          uid: user.uid, // Ensure uid is valid
+        };
+
+        // Save the transaction to Firestore
+        await addDoc(collection(db, "transactions"), transaction);
+        console.log("Transaction added successfully!");
+        reset(); // Reset the form
+      } else {
+        console.error("User is not authenticated or UID is missing.");
+      }
+    } catch (error) {
+      console.error("Error adding transaction: ", error);
+    }
   };
+
   return (
     <div className="mt-8 mx-6 text-white">
-      <h2 className="text-3xl font-bold mb-4 text-white">
-        Add New Transaction
-      </h2>
+      <h2 className="text-3xl font-bold mb-4 text-white">Add New Transaction</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid md:grid-cols-4 grid-cols-2 gap-4"
       >
         <div>
-          <label htmlFor="date" className="block mb-2">
-            Date
-          </label>
+          <label htmlFor="date" className="block mb-2">Date</label>
           <input
             {...register("date", {
               required: "Please enter a date",
             })}
             type="date"
             id="date"
-            name="date"
             className="bg-secondary rounded px-4 py-2 w-full"
           />
           {errors.date && (
             <span className="text-expense">{`${errors.date.message}`}</span>
           )}
         </div>
+
         <div>
-          <label htmlFor="category" className="block mb-2">
-            Category
-          </label>
+          <label htmlFor="category" className="block mb-2">Category</label>
           <select
-            {...register("category", { required: "Please Enter Category" })}
+            {...register("category", { required: "Please enter a category" })}
             id="category"
-            name="category"
             className="bg-secondary rounded px-4 py-2 w-full"
           >
             <option value="">Select a category</option>
@@ -65,13 +72,12 @@ function Form() {
             <span className="text-expense">{`${errors.category.message}`}</span>
           )}
         </div>
+
         <div>
-          <label htmlFor="amount" className="block mb-2">
-            Amount
-          </label>
+          <label htmlFor="amount" className="block mb-2">Amount</label>
           <input
             {...register("amount", {
-              required: "Please Enter Amount",
+              required: "Please enter an amount",
               min: {
                 value: 0.01,
                 message: "Amount must be a positive number",
@@ -79,35 +85,33 @@ function Form() {
             })}
             type="number"
             id="amount"
-            name="amount"
             className="bg-secondary rounded px-4 py-2 w-full"
           />
           {errors.amount && (
             <span className="text-expense">{`${errors.amount.message}`}</span>
           )}
         </div>
+
         <div>
-          <label htmlFor="description" className="block mb-2">
-            Description
-          </label>
+          <label htmlFor="description" className="block mb-2">Description</label>
           <input
             {...register("description", {
-              required: "Please Enter A Description",
+              required: "Please enter a description",
             })}
             type="text"
             id="description"
-            name="description"
-            className="bg-secondary rounded px-4 py-2 w-full text-white"
+            className="bg-secondary rounded px-4 py-2 w-full"
           />
           {errors.description && (
             <span className="text-expense">{`${errors.description.message}`}</span>
           )}
         </div>
+
         <div className="col-span-2 md:col-span-4 text-right">
           <button
             disabled={isSubmitting}
             type="submit"
-            className="bg-text-light hover:scale-110 transition-transform  text-white font-bold py-2 px-4 rounded"
+            className="bg-text-light hover:scale-110 transition-transform text-white font-bold py-2 px-4 rounded"
           >
             Add Transaction
           </button>

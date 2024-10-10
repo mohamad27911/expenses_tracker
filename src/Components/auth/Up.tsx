@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { auth } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const Up: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -11,6 +12,7 @@ const Up: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [error, setError] = useState<string>('');
 
+    const navigate = useNavigate(); 
     const handleTogglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
@@ -20,6 +22,12 @@ const Up: React.FC = () => {
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             console.log('Registered successfully');
+            const authInfo={
+                email: email,
+                isAuth:true
+            }
+            localStorage.setItem("auth",JSON.stringify(authInfo))
+            navigate('/home');
         } catch (err) {
             setError('Failed to register. Please try again.');
             console.error(err);
@@ -86,7 +94,7 @@ const Up: React.FC = () => {
                 </div>
                 {error && <p className="text-red-500">{error}</p>}
                 <button
-                    className='text-text px-8 py-2 rounded-full bg-background font-bold float-end hover:bg-text-light transition duration-300'
+                    className='text-text px-8 py-2 rounded-full bg-text-light font-bold float-end hover:bg-orange-600 transition duration-300'
                     type='submit'
                 >
                     Register

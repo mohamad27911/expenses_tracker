@@ -24,7 +24,7 @@ function Registration() {
             <div
                 className='flex items-center justify-center min-h-screen py-10 sm:py-40 '>
                 <div className=' flex flex-col lg:flex-row w-10/12 lg:w-8/12 bg-white rounded-3xl mx-auto shadow-lg overflow-hidden'>
-                    {/* Image Container */}
+                
                     
 
                     {/* Form Container */}

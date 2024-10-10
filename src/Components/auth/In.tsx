@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { auth } from "../../config/firebase";
@@ -10,6 +11,8 @@ const In: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
 
+    const navigate = useNavigate(); 
+
     const handleTogglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
@@ -19,6 +22,12 @@ const In: React.FC = () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             console.log('Signed in successfully');
+            const authInfo={
+                email: email,
+                isAuth:true
+            }
+            localStorage.setItem("auth",JSON.stringify(authInfo))
+            navigate('/home');
         } catch (err) {
             setError('Failed to sign in. Please check your credentials.');
             console.error(err);
@@ -70,7 +79,7 @@ const In: React.FC = () => {
                 </div>
                 {error && <p className="text-red-500">{error}</p>}
                 <button
-                    className='text-text px-8 py-2 rounded-full bg-background font-bold float-end hover:bg-text-light transition duration-300'
+                    className='text-text px-8 py-2 rounded-full bg-text-light font-bold float-end hover:bg-orange-600 transition duration-300'
                     type='submit'
                 >
                     Sign In
