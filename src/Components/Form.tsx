@@ -1,5 +1,5 @@
 import { FieldValues, useForm } from "react-hook-form";
-import { auth, db } from "../config/firebase";
+import { db } from "../config/firebase";
 import { addDoc, collection } from "firebase/firestore";
 
 function Form() {
@@ -11,29 +11,32 @@ function Form() {
   } = useForm();
 
   const onSubmit = async (data: FieldValues) => {
-    try {
-      const user = auth.currentUser
-
-      if (user) {
-        const transaction = {
-          amount: parseFloat(data.amount),
-          date: data.date,
-          category: data.category,
-          description: data.description,
-          uid: user.uid, // Ensure uid is valid
-        };
-
+    const user = JSON.parse(localStorage.getItem("auth") || '{}');
+  
+    if (user && user.uid) {
+      console.log(user.uid);
+  
+      const transaction = {
+        amount: parseFloat(data.amount),
+        date: data.date,
+        category: data.category,
+        description: data.description,
+        uid: user.uid, // Ensure uid is valid
+      };
+  
+      try {
         // Save the transaction to Firestore
         await addDoc(collection(db, "transactions"), transaction);
         console.log("Transaction added successfully!");
         reset(); // Reset the form
-      } else {
-        console.error("User is not authenticated or UID is missing.");
+      } catch (error) {
+        console.error("Error adding transaction: ", error);
       }
-    } catch (error) {
-      console.error("Error adding transaction: ", error);
+    } else {
+      console.error("User is not authenticated or UID is missing.");
     }
   };
+  
 
   return (
     <div className="mt-8 mx-6 text-white">

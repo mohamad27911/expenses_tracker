@@ -22,11 +22,8 @@ const Up: React.FC = () => {
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             console.log('Registered successfully');
-            const authInfo={
-                email: email,
-                isAuth:true
-            }
-            localStorage.setItem("auth",JSON.stringify(authInfo))
+          
+            localStorage.setItem("auth",JSON.stringify(auth.currentUser))
             navigate('/home');
         } catch (err) {
             setError('Failed to register. Please try again.');

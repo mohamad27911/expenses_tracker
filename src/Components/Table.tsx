@@ -1,29 +1,34 @@
-import { useContext, useEffect } from 'react';
-import { TransactionContext } from '../context/TransactionContext';
-import { auth, db } from '../config/firebase';
+import { useEffect, useState } from 'react';
+import { db } from '../config/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
-function Table() {
-  // context API: consumer
-  const { transactions, setTransactions } = useContext(TransactionContext); // Ensure setTransactions is available in the context
+interface Transaction  {
+  id: string;
+  date: string;
+  category: string;
+  amount: number;
+  description: string;
+};
 
+function Table() {
+  const [trans, setTrans] = useState<Transaction[]>([]);
+  
   // Retrieve the user from localStorage
   const user = JSON.parse(localStorage.getItem("auth") || '{}');
 
   useEffect(() => {
     const getTransactions = async () => {
-      // Check if user is authenticated
-      if (user.isAuth) {
-        // Create a query to get transactions for the current user
+      if (user && user.uid) {
         const transactionCollectionRef = collection(db, "transactions");
-        const q = query(transactionCollectionRef, where("uid", "==", user.uid)); // Assuming user.uid is available
+        const q = query(transactionCollectionRef, where("uid", "==", user.uid));
 
         try {
-          // Fetch the transactions from Firestore
           const querySnapshot = await getDocs(q);
-          const transList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Get the data
-          setTransactions(transList); // Update the context or local state
-          console.log(transList);
+          const transList = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Transaction[]; // Type assertion to Transaction[]
+          setTrans(transList);
         } catch (err) {
           console.log(err);
         }
@@ -33,7 +38,7 @@ function Table() {
     };
 
     getTransactions();
-  }, [user, setTransactions]); // Dependency on user and setTransactions
+  }, [user]);
 
   return (
     <div className="relative overflow-x-auto max-h-[50vh] shadow-md sm:rounded-lg mx-6">
@@ -47,8 +52,8 @@ function Table() {
           </tr>
         </thead>
         <tbody className="text-center">
-          {transactions.map((row, index) => (
-            <tr key={index} className="bg-secondary">
+          {trans.map((row) => (
+            <tr key={row.id} className="bg-secondary">
               <th scope="row" className="px-6 py-4 font-medium text-blue-50 whitespace-nowrap">
                 {row.date}
               </th>

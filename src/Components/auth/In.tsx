@@ -22,11 +22,8 @@ const In: React.FC = () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             console.log('Signed in successfully');
-            const authInfo={
-                email: email,
-                isAuth:true
-            }
-            localStorage.setItem("auth",JSON.stringify(authInfo))
+            
+            localStorage.setItem("auth", JSON.stringify(auth.currentUser)); // authUser should contain uid and other data.
             navigate('/home');
         } catch (err) {
             setError('Failed to sign in. Please check your credentials.');
