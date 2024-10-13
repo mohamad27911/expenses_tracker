@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { auth } from "../../config/firebase";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 const Up: React.FC = () => {
@@ -12,7 +12,23 @@ const Up: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [error, setError] = useState<string>('');
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Ensure persistence across refreshes
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        navigate('/home'); // Redirect to home if user is already signed in
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error('Error setting persistence:', error);
+            });
+    }, [navigate]);
+
     const handleTogglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
@@ -22,9 +38,7 @@ const Up: React.FC = () => {
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             console.log('Registered successfully');
-          
-            localStorage.setItem("auth",JSON.stringify(auth.currentUser))
-            navigate('/home');
+            navigate('/home'); // Redirect after successful sign-up
         } catch (err) {
             setError('Failed to register. Please try again.');
             console.error(err);

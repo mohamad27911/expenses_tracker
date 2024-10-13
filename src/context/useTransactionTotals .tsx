@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 
-interface Transaction {
-    date: string;
-    category: string;
-    amount: number;
-    description: string;
-  }
+interface Transaction  {
+  uid: string;
+  date: string;
+  category: string;
+  amount: number;
+  description: string;
+};
+
 
 export const useTransactionTotals = (transactions:Transaction[]) => {
   const [totalIncome, setTotalIncome] = useState(0);

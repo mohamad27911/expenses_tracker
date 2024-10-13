@@ -12,7 +12,7 @@ function Card({ isProg, title, value }: PropsType) {
             <h1 className="py-4 text-2xl">{title}</h1>
             <div className={`grid gap-10 ${isProg ? "mb-0" : "mb-8"}`}>
                 <div className="mt-5 text-4xl">
-                    {isProg ? "$500,000" : `$${new Intl.NumberFormat().format(value)}`}
+                    {isProg ? "$10,000" : `$${new Intl.NumberFormat().format(value)}`}
                 </div>
                 {isProg && <ProgressBar val={value} />}
             </div>

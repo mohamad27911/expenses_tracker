@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { auth } from "../../config/firebase";
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 const In: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -11,7 +11,24 @@ const In: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                navigate('/home');
+            } else {
+                navigate('/');
+            }
+        });
+
+        const setAuthPersistence = async () => {
+            await setPersistence(auth, browserLocalPersistence);
+        };
+        setAuthPersistence();
+
+        return () => unsubscribe();
+    }, [navigate]);
 
     const handleTogglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
@@ -22,11 +39,17 @@ const In: React.FC = () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             console.log('Signed in successfully');
-            
-            localStorage.setItem("auth", JSON.stringify(auth.currentUser)); // authUser should contain uid and other data.
-            navigate('/home');
+            setEmail(''); // Clear email input
+            setPassword(''); // Clear password input
+            navigate('/home'); // Redirect after successful sign-in
         } catch (err) {
-            setError('Failed to sign in. Please check your credentials.');
+            if (err.code === 'auth/user-not-found') {
+                setError('No user found with this email.');
+            } else if (err.code === 'auth/wrong-password') {
+                setError('Incorrect password. Please try again.');
+            } else {
+                setError('Failed to sign in. Please check your credentials.');
+            }
             console.error(err);
         }
     };
@@ -70,6 +93,7 @@ const In: React.FC = () => {
                         type="button"
                         onClick={handleTogglePasswordVisibility}
                         className="absolute inset-y-0 right-3 flex items-center -bottom-8"
+                        aria-label={isPasswordVisible ? "Hide password" : "Show password"}
                     >
                         <FontAwesomeIcon icon={!isPasswordVisible ? faEyeSlash : faEye} className="h-5 w-5 text-gray-500" />
                     </button>
