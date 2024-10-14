@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { auth } from "../../config/firebase";
 import { signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 
 const In: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -43,9 +44,10 @@ const In: React.FC = () => {
             setPassword(''); // Clear password input
             navigate('/home'); // Redirect after successful sign-in
         } catch (err) {
-            if (err.code === 'auth/user-not-found') {
+            const error = err as FirebaseError; // Cast the error to FirebaseError
+            if (error.code === 'auth/user-not-found') {
                 setError('No user found with this email.');
-            } else if (err.code === 'auth/wrong-password') {
+            } else if (error.code === 'auth/wrong-password') {
                 setError('Incorrect password. Please try again.');
             } else {
                 setError('Failed to sign in. Please check your credentials.');
