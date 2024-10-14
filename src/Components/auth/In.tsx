@@ -61,7 +61,7 @@ const In: React.FC = () => {
             </p>
             <form onSubmit={handleSignIn}>
                 <div className='mb-4'>
-                    <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor='email'>
+                    <label className='block text-white text-sm font-bold mb-2' htmlFor='email'>
                         Email
                     </label>
                     <input
@@ -76,7 +76,7 @@ const In: React.FC = () => {
                     />
                 </div>
                 <div className='mb-4 relative'>
-                    <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor='password'>
+                    <label className='block text-white text-sm font-bold mb-2' htmlFor='password'>
                         Password
                     </label>
                     <input
