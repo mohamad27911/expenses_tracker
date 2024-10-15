@@ -1,10 +1,11 @@
 import './index.css';
 import Registration from './pages/Registration';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route,  } from 'react-router-dom';
 import AuthRoute from './Components/firebase/AuthRoute';
 import Parent from './Components/Parent';
 import { signOut } from 'firebase/auth';
 import { auth } from './config/firebase';
+import NotFound from './Components/NotFound ';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
   <button
     onClick={() => signOut(auth)}
     type="button"
-    className="bg-expense hover:scale-110 transition-transform text-white font-bold py-2 px-4 rounded w-fit"
+    className="bg-expense hover:scale-110 transition-transform text-white font-bold py-2 px-4 rounded w-fit mb-6"
   >
     Log Out From 
     <span className="text-primary"> {auth.currentUser?.email}</span>
@@ -40,7 +41,7 @@ const AppWithProvider = () => {
             }
           />
           <Route path="/" element={<Registration />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
   );

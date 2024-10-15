@@ -21,6 +21,7 @@
     "@react-spring/web": "^9.7.4",
     "@splinetool/react-spline": "^4.0.0",
     "firebase": "^10.14.0",
+    "framer-motion": "^11.11.8",
     "fs": "^0.0.1-security",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
