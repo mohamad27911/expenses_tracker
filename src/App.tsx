@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route,  } from 'react-router-dom';
 import AuthRoute from './Components/firebase/AuthRoute';
 import Parent from './Components/Parent';
 import { signOut } from 'firebase/auth';
-import { auth } from './config/firebase';
+import { auth } from './config/firebase.ts';
 import NotFound from './Components/NotFound ';
 
 function App() {

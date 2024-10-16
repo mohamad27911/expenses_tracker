@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { auth, db } from "../../config/firebase";
+import { auth, db } from "../../config/firebase.ts";
 import { useState, useEffect } from "react";
 
 interface Transaction {

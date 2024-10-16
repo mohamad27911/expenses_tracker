@@ -1,6 +1,6 @@
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { auth, db } from "../config/firebase";
+import { auth, db } from "../config/firebase.ts";
 import { FieldValues, useForm } from "react-hook-form";
 import { addDoc, collection } from "firebase/firestore";
 

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { auth } from "../../config/firebase";
+import { auth } from "../../config/firebase.ts";
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 // CoinSpinner component
